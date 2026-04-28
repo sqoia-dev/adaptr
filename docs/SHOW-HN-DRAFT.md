@@ -115,12 +115,16 @@ helm install my-adaptr oci://ghcr.io/sqoia-dev/charts/adaptr \
   be disabled with `REWRITE_HTML=false`.
 - Responses over 10 MB (configurable) are passed through unmodified — oversized
   bundles will not have runtime paths patched.
-- Next.js static export is partial — most patterns work, some dynamic import and
-  image optimization patterns need verification.
+- Next.js static export (`output: 'export'`) works for both Pages Router and App
+  Router — including dynamic routes, client-side navigation, and RSC-based page
+  transitions. ISR/SSR require a running Next.js server and are out of scope; static
+  export only. Next.js `basePath` config should not be combined with adaptr — use
+  one or the other.
 - One container per SPA. No multi-tenant mode.
 
 **Supported frameworks:** Vite (React, Vue, Svelte), webpack (CRA, Vue CLI),
-Angular, SystemJS. Any SPA that uses `base: '/'` by default should work.
+Angular, SystemJS, Next.js static export (Pages Router + App Router). Any SPA that
+uses `base: '/'` by default should work.
 
 **License:** MIT. Source at https://github.com/sqoia-dev/adaptr.
 
@@ -258,7 +262,31 @@ Security Policy and Subresource Integrity."
 
 ---
 
-### 8. "Does this work for apps behind Kubernetes ingress with path rewriting?"
+### 8. "Does it work with Next.js?"
+
+**Expected form:** "What about Next.js? Does it handle `/_next/` paths correctly?"
+
+**Reply:**
+> Tested against Next.js 16 (Turbopack) with `output: 'export'` — both Pages Router
+> and App Router. What works: page load, static pages, dynamic routes
+> (`/blog/[slug]`), client-side navigation, dynamic chunk loading (lazy code-split
+> chunks), RSC-based page transitions (App Router), and SSG data fetches. The key
+> mechanism: adaptr rewrites `/_next/` paths in the initial HTML to relative paths so
+> they resolve correctly via the injected `<base href>`. For lazy chunks that the
+> turbopack runtime loads dynamically at runtime (via DOM insertion), adaptr's
+> injected MutationObserver intercepts the `<script src="/_next/...">` element before
+> the browser issues the network request and prepends the correct base path.
+>
+> Two caveats: (1) ISR and SSR are out of scope — those require a running Next.js
+> server, not a static file server; adaptr is for `output: 'export'` only. (2) Do not
+> combine adaptr's `BASE_PATH` with Next.js's `basePath` config — use one or the other.
+> If you have source access and a stable subpath, `basePath` in `next.config` is the
+> right answer. adaptr is for when the path is not known at build time, or when you
+> don't have source access.
+
+---
+
+### 9. "Does this work for apps behind Kubernetes ingress with path rewriting?"
 
 **Expected form:** "I have ingress nginx doing path stripping. Does this work with
 that setup?"
@@ -283,6 +311,10 @@ that setup?"
 - [x] Health check endpoint: `GET /health` returns `{"status":"ok"}`
 - [x] README hero block updated (Q2c)
 - [x] Comparison table in `docs/COMPARISON.md` (Q2a)
+- [x] Next.js Pages Router static export tested (Next.js 16, Turbopack) — Q3 sprint
+- [x] Next.js App Router static export tested (Next.js 16, Turbopack) — Q3 sprint
+- [x] Next.js basePath coexistence documented (don't combine) — Q3 sprint
+- [x] Next.js FAQ entry added to SHOW-HN-DRAFT.md — Q3 sprint
 - [ ] Verify Docker image is current for v0.4.0 before posting
 - [ ] Confirm `docker run` quick-start command works against a real SPA
 - [ ] Check for any open issues or known regressions in the repo before posting

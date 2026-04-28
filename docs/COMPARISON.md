@@ -128,6 +128,16 @@ Being specific here matters. These are real limitations, not hedges:
 - **Does not fix WebSocket over a non-standard port.** WebSocket patching handles
   `ws://` with the current hostname; it does not handle `ws://hostname:custom-port`
   patterns automatically.
-- **Next.js static export is partial support.** The `/_next/` prefix is preserved
-  (not rewritten), which covers most asset loading, but some Next.js patterns around
-  image optimization and dynamic imports may need additional configuration.
+- **Next.js static export: Pages Router and App Router both work.** Tested against
+  Next.js 16 (Turbopack) with `output: 'export'`. Pages Router: page load, static
+  pages, dynamic routes (`/blog/[slug]`), client-side navigation, and SSG data
+  fetches all work. App Router: page load, Server Components rendered to static HTML,
+  Client Component hydration, client-side navigation via RSC payloads, and lazy
+  chunk loading all work. The turbopack runtime `t="/_next/"` variable is not rewritten
+  in the JS bundle, but the adaptr MutationObserver intercepts dynamic `<script src="/_next/...">` 
+  insertions before the browser issues the network request, so lazy chunk loads resolve
+  correctly. Limitations that remain: (1) apps built with Next.js `basePath` set are
+  not supported — adaptr should only be used with apps built without `basePath`; (2) ISR 
+  and SSR require a running Next.js server and are out of scope for adaptr (static export 
+  only); (3) the `next/image` optimization API requires a server — use `images: { unoptimized: true }`
+  in `next.config` when exporting statically.

@@ -322,7 +322,7 @@ See `charts/adaptr/README.md` for full configuration reference.
 | webpack (CRA, Vue CLI) | Full | `__webpack_require__.p` replacement + `<base href>` injection |
 | SystemJS | Full | Framework detection gates SystemJS-specific rewrites |
 | Angular | Full | `<base href>` (Angular's native base-href mechanism) |
-| Next.js static export | Partial | webpack rewrite; `/_next/` prefix is preserved |
+| Next.js static export (Pages Router + App Router) | Full | HTML attribute rewrite + MutationObserver intercepts dynamic `/_next/` chunk inserts; static export only (`output: 'export'`) |
 | Any SPA with `base: '/'` | Full | Generic HTML/CSS/JS rewriting + runtime interceptors |
 | Apps with WebSocket connections | Full | WebSocket constructor patch handles relative and same-origin `ws://` URLs |
 | Apps using EventSource (SSE) | Full | EventSource constructor patch |
