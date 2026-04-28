@@ -445,4 +445,10 @@ adaptr is designed for local development and on-premise deployments behind priva
 
 ---
 
+## Examples
+
+- [bc_anythingllm_ollama](https://github.com/NessieCanCode/bc_anythingllm_ollama) — AnythingLLM + Ollama deployed under Open OnDemand, using adaptr to handle the dynamic `/rnode/<host>:<port>/` subpath that OOD generates per session. This is the canonical adaptr use case: an app that has no knowledge of its subpath at build time, running behind a proxy whose path changes on every job launch.
+
+---
+
 Built by [Sqoia Labs](https://sqoia.dev) — [MIT License](LICENSE)
