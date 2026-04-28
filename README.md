@@ -431,4 +431,4 @@ adaptr is designed for local development and on-premise deployments behind priva
 
 ---
 
-Built by [Sqoia Labs](https://sqoia.dev)
+Built by [Sqoia Labs](https://sqoia.dev) — [MIT License](LICENSE)
