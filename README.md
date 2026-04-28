@@ -2,9 +2,23 @@
 
 **Serve any SPA at any subpath. No rebuild required.**
 
-Open-source SPA Subpath Adapter — transparent path adapter for single-page applications behind subpath prefixes.
+Deploying a SPA at `/myapp/` instead of `/` used to mean one of two things:
+rebuild the app with `base=/myapp/` baked into the bundle — which requires source
+access, a working build pipeline, and a path that is known at build time — or bolt
+on nginx `sub_filter` for the HTML and hope the JS router figures out the rest.
+Neither works when the path is dynamic (Open OnDemand generates a unique
+`/rnode/<node>/<port>/` per session), when you do not have source access, or when
+a pipeline re-run is more expensive than the problem warrants. adaptr does it at
+runtime: one container intercepts the upstream responses, rewrites asset paths in
+HTML, CSS, and JS bundles, injects the runtime interceptors that fix `fetch`,
+`WebSocket`, and `pushState`, and re-compresses gzip responses — all before the
+browser sees a byte. No rebuild. No app changes. One env var.
 
-Modern SPAs break when deployed behind subpath proxies — Open OnDemand, nginx location blocks, Kubernetes ingress, Azure App Service. The assets load from the wrong path, the client-side router 404s, and runtime API calls hit the domain root instead of the proxy prefix. Every tool in the industry either requires rebuilding the app or maintains a curated list of supported apps. adaptr fixes it transparently: one container, one env var, and any React/Vue/Angular/Svelte app works.
+adaptr is for SPA developers and platform engineers who deploy behind a reverse
+proxy and need the subpath to just work. It handles React, Vue, Angular, and Svelte
+apps using Vite or webpack, with full support for service workers, sourcemaps, PWA
+manifests, and import maps. Pure Go standard library. Single binary or Docker
+container. Helm chart included for Kubernetes. MIT licensed.
 
 ---
 
